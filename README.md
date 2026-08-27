@@ -1,6 +1,19 @@
 # SMTP Email Service
 
+![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet&logoColor=white)
+![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-10.0-512BD4?logo=dotnet&logoColor=white)
+![MailKit](https://img.shields.io/badge/MailKit-4.17.0-0078D4?logo=maildotru&logoColor=white)
+![Swagger](https://img.shields.io/badge/Swagger-6.9.0-85EA2D?logo=swagger&logoColor=black)
+![xUnit](https://img.shields.io/badge/xUnit-2.9.2-5A3E85?logo=xunit&logoColor=white)
+
 An ASP.NET Core .NET 10 SMTP email API using Clean/Layered Architecture. `POST /api/emails` sends an email synchronously through the configured SMTP server.
+
+## Prerequisites and versions
+
+- **Target framework:** .NET 10 (`net10.0`), the current LTS release.
+- **Required SDK:** .NET SDK 10.0 or later within the 10.x release line.
+- **ASP.NET Core runtime:** 10.0 or later within the 10.x release line.
+- Dependency versions are shown in the badges above; MailKit includes MimeKit 4.17.0.
 
 ## Run
 
@@ -13,6 +26,12 @@ dotnet run --project src/SmtpEmailService.Api
 ```
 
 Set `Smtp:Host`, `Smtp:Username`, and `Smtp:FromAddress` through environment variables or local configuration. In Development, Swagger UI is available at `/swagger`; use **Authorize** to enter the `X-Api-Key` value. Health is available at `/health`.
+
+Run the automated tests with:
+
+```powershell
+dotnet test SmtpEmailService.sln
+```
 
 ## Send an email
 
