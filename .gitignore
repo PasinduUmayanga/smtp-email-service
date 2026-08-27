@@ -1,0 +1,31 @@
+# Build output
+**/bin/
+**/obj/
+[Dd]ebug/
+[Rr]elease/
+publish/
+
+# IDE and editor files
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Test output and coverage
+TestResults/
+coverage/
+coverage*.xml
+*.trx
+
+# Local secrets and environment overrides
+appsettings.Local.json
+appsettings.*.local.json
+.env
+.env.*
+secrets.json
+
+# Logs and generated files
+*.log
+logs/
