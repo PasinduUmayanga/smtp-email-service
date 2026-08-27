@@ -18,6 +18,83 @@ An ASP.NET Core .NET 10 SMTP email API using Clean/Layered Architecture. `POST /
 - **ASP.NET Core runtime:** 10.0 or later within the 10.x release line.
 - Dependency versions are shown in the badges above; MailKit includes MimeKit 4.17.0.
 
+## Architecture
+
+The project uses Clean Architecture with feature-based application code. Dependencies always point inward:
+
+```text
+HTTP request
+    │
+    ▼
+API controller ──► Application handler ──► Application service ──► IEmailSender
+    │                                                                      │
+    │                                                              Infrastructure
+    │                                                            MailKitEmailSender
+    │                                                                      │
+    └────────────────────────────────────────────────────────────────── SMTP server
+
+Domain is shared by Application and Infrastructure, but has no framework dependencies.
+```
+
+```text
+src/
+├── SmtpEmailService.Domain/              # Email models and business concepts
+├── SmtpEmailService.Application/
+│   └── Features/Emails/SendEmail/         # Request, handler, service, interfaces, validation
+├── SmtpEmailService.Infrastructure/       # MailKit SMTP adapter and configuration binding
+└── SmtpEmailService.Api/
+    ├── Controllers/                       # HTTP endpoints
+    └── Program.cs                         # Dependency composition and middleware
+tests/SmtpEmailService.Tests/              # Application/unit tests
+```
+
+### Layer responsibilities
+
+| Layer | Owns | Must not depend on |
+|---|---|---|
+| Domain | Framework-independent models such as `EmailMessage` | ASP.NET Core, MailKit, configuration |
+| Application | Use cases, handlers, services, validation, and interfaces such as `IEmailSender` | API or Infrastructure |
+| Infrastructure | MailKit, SMTP options, and `IEmailSender` implementation | API |
+| API | Controllers, API-key middleware, error responses, Swagger, and DI composition | MailKit directly |
+
+## Tutorial: initialize the solution
+
+The following commands illustrate how this solution is structured from an empty directory. The repository already contains the completed version.
+
+```powershell
+dotnet new sln --name SmtpEmailService
+dotnet new classlib --name SmtpEmailService.Domain --output src/SmtpEmailService.Domain
+dotnet new classlib --name SmtpEmailService.Application --output src/SmtpEmailService.Application
+dotnet new classlib --name SmtpEmailService.Infrastructure --output src/SmtpEmailService.Infrastructure
+dotnet new webapi --use-controllers --name SmtpEmailService.Api --output src/SmtpEmailService.Api
+dotnet new xunit --name SmtpEmailService.Tests --output tests/SmtpEmailService.Tests
+
+dotnet sln SmtpEmailService.sln add src/SmtpEmailService.Domain
+dotnet sln SmtpEmailService.sln add src/SmtpEmailService.Application
+dotnet sln SmtpEmailService.sln add src/SmtpEmailService.Infrastructure
+dotnet sln SmtpEmailService.sln add src/SmtpEmailService.Api
+dotnet sln SmtpEmailService.sln add tests/SmtpEmailService.Tests
+
+dotnet add src/SmtpEmailService.Application reference src/SmtpEmailService.Domain
+dotnet add src/SmtpEmailService.Infrastructure reference src/SmtpEmailService.Application
+dotnet add src/SmtpEmailService.Api reference src/SmtpEmailService.Application
+dotnet add src/SmtpEmailService.Api reference src/SmtpEmailService.Infrastructure
+dotnet add tests/SmtpEmailService.Tests reference src/SmtpEmailService.Application
+
+dotnet add src/SmtpEmailService.Application package Microsoft.Extensions.DependencyInjection.Abstractions --version 10.0.0
+dotnet add src/SmtpEmailService.Infrastructure package MailKit --version 4.17.0
+dotnet add src/SmtpEmailService.Api package Swashbuckle.AspNetCore --version 6.9.0
+```
+
+Build each feature in this order:
+
+1. Define framework-free domain models.
+2. In `Application/Features/<Area>/<UseCase>`, define the request/result, the external interface, the service that performs the use case, and a thin handler that invokes the service.
+3. Implement the external interface in Infrastructure. For this project, `MailKitEmailSender` implements Application's `IEmailSender`.
+4. Add a thin API controller that accepts the HTTP request and calls the handler.
+5. Register Application services and Infrastructure adapters in `Program.cs`; the API project is the only composition root.
+6. Test the application service with a fake `IEmailSender`, then run the full solution test suite.
+
 ## Run
 
 Set secrets outside source control, then run the API:
