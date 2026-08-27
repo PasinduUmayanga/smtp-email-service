@@ -1,5 +1,8 @@
 # SMTP Email Service
 
+[![Build status](https://ci.appveyor.com/api/projects/status/1220154/branch/main?svg=true)](https://ci.appveyor.com/project/Mahadenamuththa/smtp-email-service/branch/main)
+[![Build History](https://img.shields.io/badge/AppVeyor-Build%20History-blue?logo=appveyor)](https://ci.appveyor.com/project/Mahadenamuththa/smtp-email-service/history)
+
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet&logoColor=white)
 ![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-10.0-512BD4?logo=dotnet&logoColor=white)
 ![MailKit](https://img.shields.io/badge/MailKit-4.17.0-0078D4?logo=maildotru&logoColor=white)
