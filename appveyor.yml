@@ -12,8 +12,15 @@ cache:
   - '%LOCALAPPDATA%\NuGet\v3-cache -> **\*.csproj, Directory.Build.props, global.json, NuGet.Config'
 
 install:
-  - ps: choco install dotnet-10.0-sdk --no-progress -y
-  - dotnet --info
+  - ps: |
+      $sdkInstalled = [bool]((dotnet --list-sdks) -match '^10\.0\.400\s')
+      if (-not $sdkInstalled) {
+        choco install dotnet-10.0-sdk --no-progress -y
+      }
+      else {
+        Write-Host 'Using preinstalled .NET SDK 10.0.400.'
+      }
+      dotnet --info
 
 before_build:
   - dotnet restore SmtpEmailService.sln
