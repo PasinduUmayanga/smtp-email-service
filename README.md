@@ -36,6 +36,25 @@ Run the automated tests with:
 dotnet test SmtpEmailService.sln
 ```
 
+## Gmail SMTP setup
+
+1. Enable [Google 2-Step Verification](https://myaccount.google.com/signinoptions/two-step-verification).
+2. Create a 16-digit [Google App Password](https://myaccount.google.com/apppasswords) for this service. Do not use your normal Google password.
+3. Configure the service using .NET user secrets:
+
+```powershell
+dotnet user-secrets --project src/SmtpEmailService.Api set "Smtp:Host" "smtp.gmail.com"
+dotnet user-secrets --project src/SmtpEmailService.Api set "Smtp:Port" "587"
+dotnet user-secrets --project src/SmtpEmailService.Api set "Smtp:UseStartTls" "true"
+dotnet user-secrets --project src/SmtpEmailService.Api set "Smtp:Username" "your-address@gmail.com"
+dotnet user-secrets --project src/SmtpEmailService.Api set "Smtp:Password" "your-16-digit-app-password"
+dotnet user-secrets --project src/SmtpEmailService.Api set "Smtp:FromAddress" "your-address@gmail.com"
+dotnet user-secrets --project src/SmtpEmailService.Api set "Smtp:FromName" "SMTP Email Service"
+dotnet user-secrets --project src/SmtpEmailService.Api set "ApiKey:Value" "a-long-random-api-key"
+```
+
+The configured `FromAddress` must be the Gmail account address or a Gmail-verified send-as alias. For a Google Workspace account, App Password availability can be restricted by the organization administrator or Advanced Protection.
+
 ## Send an email
 
 ```http
