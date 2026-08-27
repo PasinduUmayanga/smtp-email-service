@@ -16,10 +16,18 @@ install:
   - ps: |
       $dotnetDirectory = Join-Path $env:APPVEYOR_BUILD_FOLDER '.dotnet'
       $dotnetExecutable = Join-Path $dotnetDirectory 'dotnet.exe'
-      $sdkDirectory = Join-Path $dotnetDirectory 'sdk\10.0.400'
-      if (-not (Test-Path -LiteralPath $sdkDirectory)) {
+      $sdkVersion = '10.0.400'
+      $sdkIsValid = $false
+      if (Test-Path -LiteralPath $dotnetExecutable) {
+        $installedVersion = & $dotnetExecutable --version
+        $sdkIsValid = $LASTEXITCODE -eq 0 -and $installedVersion -eq $sdkVersion
+      }
+      if (-not $sdkIsValid) {
+        if (Test-Path -LiteralPath $dotnetDirectory) {
+          Remove-Item -LiteralPath $dotnetDirectory -Recurse -Force
+        }
         Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile dotnet-install.ps1
-        & .\dotnet-install.ps1 -Version 10.0.400 -InstallDir $dotnetDirectory -NoPath
+        & .\dotnet-install.ps1 -Version $sdkVersion -InstallDir $dotnetDirectory -NoPath
       }
       & $dotnetExecutable --info
 
