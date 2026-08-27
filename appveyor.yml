@@ -2,9 +2,14 @@ version: 1.0.{build}
 
 image: Visual Studio 2022
 
+build: off
+test: off
+
 environment:
   DOTNET_CLI_TELEMETRY_OPTOUT: '1'
   DOTNET_NOLOGO: '1'
+  DOTNET_ROOT: '%APPVEYOR_BUILD_FOLDER%\.dotnet'
+  MSBuildSDKsPath: '%APPVEYOR_BUILD_FOLDER%\.dotnet\sdk\10.0.400\Sdks'
   NUGET_PACKAGES: '%USERPROFILE%\.nuget\packages'
 
 cache:
